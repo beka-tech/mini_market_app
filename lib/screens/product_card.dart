@@ -1,45 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:mini_market_app/data/categories.dart';
-import 'package:mini_market_app/models/product.dart';
+
+import '../data/categories.dart';
+import '../models/product.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  const ProductCard({super.key, required this.product});
+  final VoidCallback? onTap;
+
+  const ProductCard({
+    super.key,
+    required this.product,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final productColor = colorForCategory(product.category);
     final productIcon = iconForCategory(product.category);
 
-    return Container(
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        border: BoxBorder.all(color: Colors.grey.shade400),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      width: double.infinity,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              height: 100,
-              decoration: BoxDecoration(
-                color: productColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: productColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(productIcon, size: 42, color: productColor),
               ),
-              child: Icon(productIcon, size: 30, color: productColor),
             ),
-          ),
-          SizedBox(height: 10),
-          Text(product.title, style: TextStyle(fontSize: 20)),
-          SizedBox(height: 10),
-          Text(
-            product.price.toString(),
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ],
+            const SizedBox(height: 10),
+            Text(product.title, style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 4),
+            Text(
+              '\$${product.price.toStringAsFixed(1)}',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
   }

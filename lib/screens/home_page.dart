@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mini_market_app/data/market_store.dart';
-import 'package:mini_market_app/screens/add_product.dart';
-import 'package:mini_market_app/screens/cart_page.dart';
-import 'package:mini_market_app/screens/product_card.dart';
-import 'package:mini_market_app/screens/product_details.dart';
+import 'package:go_router/go_router.dart';
+
+import '../data/market_store.dart';
+import 'product_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,40 +12,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final products = MarketStore.products;
-
   Future<void> _openCart() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CartPage()),
-    );
-
-    setState(() {});
+    await context.pushNamed('cart');
+    if (mounted) setState(() {});
   }
 
-  // Future<void> _openProductForm() async {
-  //   await Navigator.push(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => AddProduct()),
-  //   );
-
-  //   setState(() {});
-  // }
-
-  Future<void> _openProduct({required String id}) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ProductDetails(productId: id)),
+  Future<void> _openProduct(String id) async {
+    await context.pushNamed(
+      'productDetails',
+      pathParameters: {'id': id},
     );
-
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   Future<void> _openProductForm() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AddProduct()),
-    );
+    await context.pushNamed('addProduct');
+    if (mounted) setState(() {});
   }
 
   @override
@@ -56,40 +37,54 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mini Market"),
+        title: const Text(
+          'Mini Market',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
-          Badge(
-            isLabelVisible: itemCount > 0,
-            label: Text(itemCount.toString()),
-            child: Icon(Icons.shopping_cart),
+          IconButton(
+            onPressed: _openCart,
+            icon: Badge(
+              isLabelVisible: itemCount > 0,
+              label: Text(itemCount.toString()),
+              child: const Icon(Icons.shopping_cart),
+            ),
           ),
         ],
-        actionsPadding: EdgeInsets.all(8),
-        bottom: PreferredSize(
+        bottom: const PreferredSize(
           preferredSize: Size.fromHeight(1),
-          child: Divider(),
+          child: Divider(height: 1),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          itemCount: products.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 0.85,
-          ),
-          itemBuilder: (BuildContext context, int index) {
-            final product = products[index];
-
-            return ProductCard(product: product);
-          },
-        ),
-      ),
+      body: products.isEmpty
+          ? const Center(
+              child: Text(
+                'No products yet.\nTap + to add your first one.',
+                textAlign: TextAlign.center,
+              ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(16),
+              child: GridView.builder(
+                itemCount: products.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  childAspectRatio: 0.78,
+                ),
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  return ProductCard(
+                    product: product,
+                    onTap: () => _openProduct(product.id),
+                  );
+                },
+              ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openProductForm,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

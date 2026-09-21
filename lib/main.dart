@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mini_market_app/screens/home_page.dart';
+
+import 'router/app_router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,11 +11,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/',
+    return MaterialApp.router(
       title: 'Mini Market',
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      routerConfig: appRouter,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB)),
+        scaffoldBackgroundColor: Colors.white,
+        useMaterial3: true,
+      ),
     );
   }
 }
